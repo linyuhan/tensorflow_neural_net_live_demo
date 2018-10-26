@@ -1,3 +1,5 @@
+# to execute online: https://www.katacoda.com/basiafusinska/courses/tensorflow-getting-started/tensorflow-mnist-beginner
+
 '''
 A Convolutional Network implementation example using TensorFlow library.
 This example is using the MNIST database of handwritten digits
@@ -6,37 +8,38 @@ Author: Aymeric Damien
 Project: https://github.com/aymericdamien/TensorFlow-Examples/
 '''
 
-from __future__ import print_function
+from __future__ import print_function 
 
 import tensorflow as tf
 
 # Import MNIST data
 from tensorflow.examples.tutorials.mnist import input_data
 mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
+#onehot = faz com que a representacao seja legivel para a maquina (em vez de labels, teremos '001', '010', '100')
 
-# Parameters
-learning_rate = 0.001
-training_iters = 200000
-batch_size = 128
-display_step = 10
+# Hyper Parameters
+learning_rate = 0.001 #ajuste dos pesos, quanto menor, "mais preciso"
+training_iters = 200000 #iteracoes de treinamento
+batch_size = 128 
+display_step = 10 #a cada 10 iteracoes, sera mostrado o que esta acontecendo
 
 # Network Parameters
 n_input = 784 # MNIST data input (img shape: 28*28)
 n_classes = 10 # MNIST total classes (0-9 digits)
-dropout = 0.75 # Dropout, probability to keep units
+dropout = 0.75 # Dropout, probability to keep units (randomicamente desliga alguns neuronios, assim a rede deve encontrar novos entre as camadas para encontrar um modelo que mais generaliza nosso problema)
 
 # tf Graph input
-x = tf.placeholder(tf.float32, [None, n_input])
-y = tf.placeholder(tf.float32, [None, n_classes])
+x = tf.placeholder(tf.float32, [None, n_input]) #entrada de imagens
+y = tf.placeholder(tf.float32, [None, n_classes]) #entrada dos labels
 keep_prob = tf.placeholder(tf.float32) #dropout (keep probability)
 
 
 # Create some wrappers for simplicity
-def conv2d(x, W, b, strides=1):
+def conv2d(x, W, b, strides=1):# 
     # Conv2D wrapper, with bias and relu activation
     x = tf.nn.conv2d(x, W, strides=[1, strides, strides, 1], padding='SAME')
     x = tf.nn.bias_add(x, b)
-    return tf.nn.relu(x)
+    return tf.nn.relu(x)#funcao de ativacao rectified linear unit
 
 
 def maxpool2d(x, k=2):
@@ -48,7 +51,7 @@ def maxpool2d(x, k=2):
 # Create model
 def conv_net(x, weights, biases, dropout):
     # Reshape input picture
-    x = tf.reshape(x, shape=[-1, 28, 28, 1])
+    x = tf.reshape(x, shape=[-1, 28, 28, 1])#transforma 28x28 em um vetor 1x1
 
     # Convolution Layer
     conv1 = conv2d(x, weights['wc1'], biases['bc1'])
@@ -95,7 +98,7 @@ biases = {
 pred = conv_net(x, weights, biases, keep_prob)
 
 # Define loss and optimizer
-cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(pred, y))
+cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=pred, labels=y))
 optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
 
 # Evaluate model
